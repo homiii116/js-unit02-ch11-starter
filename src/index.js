@@ -59,6 +59,7 @@ class App {
   resetValues() {
     this.workLength = 25;
     this.breakLength = 5;
+    this.longBreakLength = 15;
     this.startAt = null;
     this.endAt = null;
     this.isTimerStopped = true;
