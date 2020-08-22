@@ -64,6 +64,7 @@ class App {
     this.endAt = null;
     this.isTimerStopped = true;
     this.onWork = true;
+    this.tempCycles = 0;
   }
 
   toggleEvents() {
@@ -101,6 +102,16 @@ class App {
       }
       this.onWork = !this.onWork;
       this.startAt = time;
+
+      if (this.onWork) {
+        if (this.tempCycles === 3) {
+          this.endAt = moment(time).add(this.longBreakLength, 'minutes');
+          this.tempCycles = 0;
+        } else {
+          this.endAt = moment(time).add(this.breakLength, 'minutes');
+          this.tempCycles++;
+        }
+      }
       this.endAt = this.onWork ? moment(time).add(this.workLength, 'minutes')
         : moment(time).add(this.breakLength, 'minutes');
     }
