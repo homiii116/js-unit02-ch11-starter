@@ -11,6 +11,7 @@ class App {
     this.resetValues = this.resetValues.bind(this);
     this.startTimer = this.startTimer.bind(this);
     this.updateTimer = this.updateTimer.bind(this);
+    this.pauseTimer = this.pauseTimer.bind(this);
     this.stopTimer = this.stopTimer.bind(this);
     this.displayTime = this.displayTime.bind(this);
     this.saveIntervalData = this.saveIntervalData.bind(this);
@@ -53,6 +54,7 @@ class App {
     this.percentOfTodayDisplay = document.getElementById('percent-today');
     this.historyDisplay = document.getElementById('history');
     this.startButton = document.getElementById('start-button');
+    this.pauseButton = document.getElementById('pause=button');
     this.stopButton = document.getElementById('stop-button');
   }
 
@@ -65,6 +67,7 @@ class App {
     this.isTimerStopped = true;
     this.onWork = true;
     this.tempCycles = 0;
+    this.pausedAt = null;
   }
 
   toggleEvents() {
@@ -95,27 +98,37 @@ class App {
   updateTimer(time = moment()) {
     const rest = this.endAt.diff(time);
     if (rest <= 0) {
+      let endAt;
       if (this.onWork) {
         this.saveIntervalData(time);
         this.displayCyclesToday();
         this.displayHistory();
       }
-      this.onWork = !this.onWork;
-      this.startAt = time;
+      this.onWork = !this.onWork; //作業中の否定
+      this.startAt = time; //momentによって得られる開始時間
 
       if (this.onWork) {
         if (this.tempCycles === 3) {
-          this.endAt = moment(time).add(this.longBreakLength, 'minutes');
+          endAt = moment(time).add(this.longBreakLength, 'minutes');
           this.tempCycles = 0;
         } else {
-          this.endAt = moment(time).add(this.breakLength, 'minutes');
-          this.tempCycles++;
+          endAt = moment(time).add(this.breakLength, 'minutes');
+          this.tempCycles += 1;
         }
       }
-      this.endAt = this.onWork ? moment(time).add(this.workLength, 'minutes')
-        : moment(time).add(this.breakLength, 'minutes');
+      this.endAt = endAt;
     }
     this.displayTime(time);
+  }
+
+  pauseTimer(e = null, time = moment()) {
+    if(e) e.preventDefault();
+    this.startButton.disabled = false;
+    this.stopButton.disabled = true;
+    this.pauseButton.disabled = true;
+    this.pausedAt = time;
+    window.clearInterval(this.timerUpdater);
+    this.timerUpdater = null;
   }
 
   stopTimer(e = null) {
@@ -123,6 +136,7 @@ class App {
     this.resetValues();
     this.startButton.disabled = false;
     this.stopButton.disabled = true;
+    this.pauseButton.disabled = true;
     window.clearInterval(this.timerUpdater);
     this.timerUpdater = null;
     this.displayTime();
