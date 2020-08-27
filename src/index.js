@@ -11,13 +11,12 @@ class App {
     this.resetValues = this.resetValues.bind(this);
     this.startTimer = this.startTimer.bind(this);
     this.updateTimer = this.updateTimer.bind(this);
-    this.pauseTimer = this.pauseTimer.bind(this);
+    this.pausedTimer = this.pausedTimer.bind(this);
     this.stopTimer = this.stopTimer.bind(this);
     this.displayTime = this.displayTime.bind(this);
     this.saveIntervalData = this.saveIntervalData.bind(this);
     this.displayCyclesToday = this.displayCyclesToday.bind(this);
     this.displayHistory = this.displayHistory.bind(this);
-
     this.resetValues();
     this.getElements();
     this.toggleEvents();
@@ -54,7 +53,7 @@ class App {
     this.percentOfTodayDisplay = document.getElementById('percent-today');
     this.historyDisplay = document.getElementById('history');
     this.startButton = document.getElementById('start-button');
-    this.pauseButton = document.getElementById('pause=button');
+    this.pauseButton = document.getElementById('pause-button');
     this.stopButton = document.getElementById('stop-button');
   }
 
@@ -73,6 +72,7 @@ class App {
   toggleEvents() {
     this.startButton.addEventListener('click', this.startTimer);
     this.stopButton.addEventListener('click', this.stopTimer);
+    this.pauseButton.addEventListener('click', this.pausedTimer);
   }
 
   saveIntervalData(momentItem) {
@@ -86,6 +86,8 @@ class App {
     if (e) e.preventDefault();
     this.startButton.disabled = true;
     this.stopButton.disabled = false;
+    this.pausedAt.disabled = false;
+    const remainingTime = this.pausedAt.diff(time); //一時停止開始時と再開時の差分
     this.isTimerStopped = false;
     this.startAt = time;
     const startAtClone = moment(this.startAt);
@@ -121,7 +123,7 @@ class App {
     this.displayTime(time);
   }
 
-  pauseTimer(e = null, time = moment()) {
+  pausedTimer(e = null, time = moment()) {
     if(e) e.preventDefault();
     this.startButton.disabled = false;
     this.stopButton.disabled = true;
@@ -129,6 +131,7 @@ class App {
     this.pausedAt = time;
     window.clearInterval(this.timerUpdater);
     this.timerUpdater = null;
+    this.displayTime();
   }
 
   stopTimer(e = null) {
