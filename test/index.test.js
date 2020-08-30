@@ -150,9 +150,24 @@ describe('updateTimer', () => {
   });
 });
 
-describe('pauseTimer', () => {
+describe('pausedTimer', () => {
   test('it should update the button status', () => {
-    
+    document.body.innerHTML = template;
+    const app = new App();
+    const now = moment();
+    const startOfToday = now.startOf('day');
+    app.startButton.disabled = false;
+    app.stopButton.disabled = true;
+    app.pauseButton.disabled = true;
+    app.isTimerStopped = false;
+    app.startButton = startOfToday;
+    app.endAt = moment(now).add(20, 'minutes');
+    app.pausedTimer();
+    const timeDisplay = document.getElementById('time-display');
+    expect(timeDisplay.innerHTML).not.toEqual('25:00');
+    expect(app.onWork).toBeTruthy();
+    expect(app.isTimerStopped).not.toBeTruthy();
+    expect(app.startButton.disabled).not.toBeTruthy();
   });
 });
 
@@ -164,6 +179,7 @@ describe('stopTimer', () => {
     const startOfToday = now.startOf('day');
     app.startButton.disabled = true;
     app.stopButton.disabled = false;
+    app.pauseButton.disabled = true;
     app.isTimerStopped = false;
     app.startAt = startOfToday;
     app.endAt = moment(now).add(20, 'minutes');

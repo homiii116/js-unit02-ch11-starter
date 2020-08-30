@@ -86,12 +86,16 @@ class App {
     if (e) e.preventDefault();
     this.startButton.disabled = true;
     this.stopButton.disabled = false;
-    this.pausedAt.disabled = false;
-    const remainingTime = this.pausedAt.diff(time); //一時停止開始時と再開時の差分
-    this.isTimerStopped = false;
-    this.startAt = time;
-    const startAtClone = moment(this.startAt);
-    this.endAt = startAtClone.add(this.workLength, 'minutes');
+    this.pauseButton.disabled = false;
+    if (this.pausedAt) {
+      const remainingTime = moment(time).diff(this.pausedAt); //一時停止開始時と再開時の差分
+      this.endAt.add(remainingTime, 'millisecond');
+    } else {
+      this.isTimerStopped = false;
+      this.startAt = time;
+      const startAtClone = moment(this.startAt);
+      this.endAt = startAtClone.add(this.workLength, 'minutes');
+    }
     this.timerUpdater = window.setInterval(this.updateTimer, 500);
     // タイムラグがあるので、0.5秒ごとにアップデートします。
     this.displayTime();
