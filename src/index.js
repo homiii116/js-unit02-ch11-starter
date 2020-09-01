@@ -113,7 +113,7 @@ class App {
       this.onWork = !this.onWork; //作業中の否定
       this.startAt = time; //momentによって得られる開始時間
 
-      if (this.onWork) {
+      if (this.onWork) { // ここまでは作業中の話をしていますから、作業中の場合のendAtに、作業時間workLengthの代入をする必要がありそうです
         if (this.tempCycles === 3) {
           endAt = moment(time).add(this.longBreakLength, 'minutes');
           this.tempCycles = 0;

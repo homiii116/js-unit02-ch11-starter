@@ -121,6 +121,8 @@ describe('updateTimer', () => {
     app.startButton.disabled = true;
     app.stopButton.disabled = false;
     app.isTimerStopped = false;
+    // tempCyclesの値指定が必要です
+    app.tempCycles = 4;
     app.startAt = startOfToday;
     const endAt = moment(startOfToday).add(25, 'minutes');
     app.endAt = endAt;
@@ -128,8 +130,9 @@ describe('updateTimer', () => {
     const timeDisplay = document.getElementById('time-display');
     expect(timeDisplay.innerHTML).toEqual('15:00');
     expect(app.onWork).not.toBeTruthy();
-    expect(app.getHistory()).toEqual([endAt.add(100, 'millisecond').valueOf()]);
-    expect(app.tempCycles).toEqual(4);
+    expect(app.getHistory()).toEqual([endAt.add(100, 'millisecond').valueOf()]);  // ↓ 休憩時間に切り替えますから、関数getHistoryを呼んで回数のカウントをする必要はありません
+    expect(app.tempCycles).toEqual(4); // 休憩時間に切り替える必要があります4回のカウントを終え、次の値をセットする必要があります
+
   });
 
   test('it should switch from break to start after break end', () => {
@@ -156,17 +159,16 @@ describe('pausedTimer', () => {
     const app = new App();
     const now = moment();
     const startOfToday = now.startOf('day');
-    app.startButton.disabled = false;
-    app.stopButton.disabled = true;
+    app.startButton.disabled = true;
+    app.stopButton.disabled = false;
     app.pauseButton.disabled = true;
     app.isTimerStopped = false;
     app.startButton = startOfToday;
-    app.endAt = moment(now).add(20, 'minutes');
-    app.pausedTimer();
-    const timeDisplay = document.getElementById('time-display');
-    expect(timeDisplay.innerHTML).not.toEqual('25:00');
-    expect(app.onWork).toBeTruthy();
-    expect(app.isTimerStopped).not.toBeTruthy();
+    app.endAt = moment(startOfToday).add(25, 'minutes');
+    app.pausedTimer(); //引数入れる
+
+    expect(app.onWork).toBeTruthy();  //timeUpdaterとpausedAtをテストする必要がありそう
+    expect(app.isTimerStopped).not.toBeTruthy();//timeUpdaterとpausedAtをテストする必要がありそう
     expect(app.startButton.disabled).not.toBeTruthy();
   });
 });
