@@ -121,8 +121,7 @@ describe('updateTimer', () => {
     app.startButton.disabled = true;
     app.stopButton.disabled = false;
     app.isTimerStopped = false;
-    // tempCyclesの値指定が必要です
-    app.tempCycles = 4;
+    app.tempCycles = 3; // tempCyclesの値指定が必要です
     app.startAt = startOfToday;
     const endAt = moment(startOfToday).add(25, 'minutes');
     app.endAt = endAt;
@@ -130,9 +129,7 @@ describe('updateTimer', () => {
     const timeDisplay = document.getElementById('time-display');
     expect(timeDisplay.innerHTML).toEqual('15:00');
     expect(app.onWork).not.toBeTruthy();
-    expect(app.getHistory()).toEqual([endAt.add(100, 'millisecond').valueOf()]);  // ↓ 休憩時間に切り替えますから、関数getHistoryを呼んで回数のカウントをする必要はありません
-    expect(app.tempCycles).toEqual(4); // 休憩時間に切り替える必要があります4回のカウントを終え、次の値をセットする必要があります
-
+    expect(app.tempCycles).toEqual(0); // 休憩時間に切り替える必要があります4回のカウントを終え、次の値をセットする必要があります
   });
 
   test('it should switch from break to start after break end', () => {
@@ -165,10 +162,9 @@ describe('pausedTimer', () => {
     app.isTimerStopped = false;
     app.startButton = startOfToday;
     app.endAt = moment(startOfToday).add(25, 'minutes');
-    app.pausedTimer(); //引数入れる
-
-    expect(app.onWork).toBeTruthy();  //timeUpdaterとpausedAtをテストする必要がありそう
-    expect(app.isTimerStopped).not.toBeTruthy();//timeUpdaterとpausedAtをテストする必要がありそう
+    app.pausedTimer(null, moment(startOfToday).add(20, 'minutes')); //引数入れる
+    expect(app.timerUpdater).toBe(null);  //timeUpdaterとpausedAtをテストする必要がありそう
+    expect(app.pausedAt.valueOf()).toEqual(moment(app.startAt).add(20, 'minutes')).valueOf());//timeUpdaterとpausedAtをテストする必要がありそう
     expect(app.startButton.disabled).not.toBeTruthy();
   });
 });
@@ -184,7 +180,7 @@ describe('stopTimer', () => {
     app.pauseButton.disabled = true;
     app.isTimerStopped = false;
     app.startAt = startOfToday;
-    app.endAt = moment(now).add(20, 'minutes');
+    app.endAt = moment(now).add(25, 'minutes');
     app.stopTimer();
     const timeDisplay = document.getElementById('time-display');
     expect(timeDisplay.innerHTML).toEqual('25:00');
