@@ -160,11 +160,11 @@ describe('pausedTimer', () => {
     app.stopButton.disabled = false;
     app.pauseButton.disabled = true;
     app.isTimerStopped = false;
-    app.startButton = startOfToday;
+    app.startAt = startOfToday;
     app.endAt = moment(startOfToday).add(25, 'minutes');
-    app.pausedTimer(null, moment(startOfToday).add(20, 'minutes')); //引数入れる
-    expect(app.timerUpdater).toBe(null);  //timeUpdaterとpausedAtをテストする必要がありそう
-    expect(app.pausedAt.valueOf()).toEqual(moment(app.startAt).add(20, 'minutes')).valueOf());//timeUpdaterとpausedAtをテストする必要がありそう
+    app.pausedTimer(null, moment(startOfToday).add(20, 'minutes')); 
+    expect(app.timerUpdater).toBe(null);  
+    expect(app.pausedAt.valueOf()).toEqual(moment(app.startAt.add(20, 'minutes')).valueOf()); // expect(...省略).toEqual(moment(new App().moment().startOf('day').add(20, 'minutes'))).valueOf(); と元々は構成される
     expect(app.startButton.disabled).not.toBeTruthy();
   });
 });
